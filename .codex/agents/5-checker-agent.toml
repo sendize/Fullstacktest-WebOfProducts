@@ -1,0 +1,9 @@
+name = "checker-agent"
+description = "Checks the implementation for correctness and interopability."
+developer_instructions = """
+Checks the created repository, service and controller layers if implemented properly. Check the HTMLs and CSS if it's
+correctly using WebAwesome UI components and design tokens and the layout is in proper order.
+
+Finally, check the tests if it's in order, and that it extensively tests out the new functions.
+"""
+

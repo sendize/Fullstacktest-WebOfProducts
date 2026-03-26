@@ -1,0 +1,58 @@
+<div id="metricsContent" class="metrics-content metrics-shell" th:fragment="metricsContent">
+    <div class="metrics-head">
+        <div>
+            <p class="eyebrow">Live metrics</p>
+            <h2 class="section-title">Catalog health at a glance</h2>
+        </div>
+        <div class="metrics-badge">
+            <wa-icon name="signal-stream"></wa-icon>
+            <span>SSE active</span>
+        </div>
+    </div>
+
+    <div class="metrics-grid">
+        <article class="metric-card">
+            <span class="metric-label">Products</span>
+            <!--            <strong class="metric-value" th:text="${pulseMetrics != null ? pulseMetrics.productCount : 0}">0</strong>-->
+            <strong class="metric-value" id="metricsProductCount">0</strong>
+            <p>Total catalog entries currently available.</p>
+        </article>
+        <article class="metric-card">
+            <span class="metric-label">Variants</span>
+            <!--            <strong class="metric-value" th:text="${pulseMetrics != null ? pulseMetrics.variantCount : 0}">0</strong>-->
+            <strong class="metric-value" id="metricsVariantCount">0</strong>
+            <p>Selectable variations across all tracked products.</p>
+        </article>
+        <article class="metric-card">
+            <span class="metric-label">Events Today</span>
+            <!--            <strong class="metric-value" th:text="${pulseMetrics != null ? pulseMetrics.todayEventCount : 0}">0</strong>-->
+            <strong class="metric-value" id="metricsTodayEventCount">0</strong>
+            <p>Activity records created during the current day.</p>
+        </article>
+        <article class="metric-card metric-card-alert">
+            <span class="metric-label">Critical Events</span>
+            <!--            <strong class="metric-value"-->
+            <!--                    th:text="${pulseMetrics != null ? pulseMetrics.criticalEventCount : 0}">0</strong>-->
+            <strong class="metric-value" id="metricsCriticalEventCount">0</strong>
+            <p>Incidents currently flagged at critical severity.</p>
+        </article>
+    </div>
+
+    <!--    <div class="metrics-summary card">-->
+    <!--        <div>-->
+    <!--            <span class="metric-label">Latest headline</span>-->
+    <!--            <strong th:text="${pulseMetrics != null and pulseMetrics.latestHeadline != null ? pulseMetrics.latestHeadline : 'No events yet'}">No-->
+    <!--                events yet</strong>-->
+    <!--        </div>-->
+    <!--        <div>-->
+    <!--            <span class="metric-label">Latest source</span>-->
+    <!--            <strong th:text="${pulseMetrics != null and pulseMetrics.latestSourceLabel != null ? pulseMetrics.latestSourceLabel : 'Waiting for activity'}">Waiting-->
+    <!--                for activity</strong>-->
+    <!--        </div>-->
+    <!--        <div>-->
+    <!--            <span class="metric-label">Last update</span>-->
+    <!--            <strong th:text="${pulseMetrics != null and pulseMetrics.lastEventAtLabel != null ? pulseMetrics.lastEventAtLabel : 'Not available'}">Not-->
+    <!--                available</strong>-->
+    <!--        </div>-->
+    <!--    </div>-->
+</div>

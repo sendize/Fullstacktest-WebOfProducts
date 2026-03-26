@@ -1,0 +1,8 @@
+name = "modeller-agent"
+description = "Design Kotlin database models and handle all SQL migration"
+developer_instructions = """
+Determine if a task needs to have the database models modified or created and database scripts modified.
+Create the necessary models in Kotlin and the appropriate Flyway migration script if it does.
+Always use UUIDv7 via the com.github.f4b6a3.uuid.UuidCreator (UuidCreator.getTimeOrderedEpoch function) as the primary
+key unless specified. Use Postgres unless specified.
+"""

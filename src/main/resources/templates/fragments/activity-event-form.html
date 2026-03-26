@@ -1,0 +1,95 @@
+<script src="../../static/js/product-page.js"></script>
+<div class="notice-shell" th:if="${submissionNotice != null}" th:fragment="eventFormStatus" id="eventFormStatus">
+    <div class="form-notice">
+        <wa-icon name="circle-check"></wa-icon>
+        <span th:text="${submissionNotice}">Event recorded.</span>
+    </div>
+</div>
+
+<section id="eventFormShell" class="card pulse-form-shell" th:fragment="eventForm">
+    <div class="pulse-form-head">
+        <p class="eyebrow">Publish event</p>
+        <h2 class="section-title">Create a live catalog update</h2>
+        <p class="subtitle">Submitting this form should persist a new activity event and let the SSE
+            stream refresh the
+            live panels.</p>
+    </div>
+
+    <div id="eventFormStatus"></div>
+
+    <!--    <div class="notice-shell" th:if="${submissionNotice != null}" id="eventFormStatus">-->
+    <!--        <div class="form-notice">-->
+    <!--            <wa-icon name="circle-check"></wa-icon>-->
+    <!--            <span th:text="${submissionNotice}">Event recorded.</span>-->
+    <!--        </div>-->
+    <!--    </div>-->
+
+    <form id="addEventForm"
+          class="pulse-form"
+          hx-post="/internal-events/events"
+          hx-target="#eventFormStatus"
+          hx-swap="outerHTML">
+        <div class="form-grid two-up">
+            <wa-select name="eventType" value="PRODUCT_SYNC" label="Event Type">
+                <wa-option th:each="option : ${eventTypeOptions}"
+                           th:value="${option.value}"
+                           th:text="${option.label}">
+                    Product Sync
+                </wa-option>
+                <th:block th:if="${eventTypeOptions == null or #lists.isEmpty(eventTypeOptions)}">
+                    <wa-option value="PRODUCT_SYNC">Product Sync</wa-option>
+                    <wa-option value="SHOWCASE_UPDATE">Showcase Update</wa-option>
+                    <wa-option value="PRICE_ALERT">Price Alert</wa-option>
+                    <wa-option value="IMPORT_STATUS">Import Status</wa-option>
+                </th:block>
+            </wa-select>
+
+            <wa-select name="severity" value="info" label="Severity">
+                <wa-option th:each="option : ${severityOptions}"
+                           th:value="${option.value}"
+                           th:text="${option.label}">
+                    Info
+                </wa-option>
+                <th:block th:if="${severityOptions == null or #lists.isEmpty(severityOptions)}">
+                    <wa-option value="info">Info</wa-option>
+                    <wa-option value="success">Success</wa-option>
+                    <wa-option value="warning">Warning</wa-option>
+                    <wa-option value="critical">Critical</wa-option>
+                </th:block>
+            </wa-select>
+        </div>
+
+        <div class="form-grid two-up">
+            <wa-input name="sourceLabel" label="Source Label" value="Catalog Ops" required></wa-input>
+            <wa-input name="headline" label="Headline" placeholder="Variant pricing audit completed"
+                      required></wa-input>
+        </div>
+
+        <wa-textarea name="detailText" label="Detail" resize="none"
+                     placeholder="Describe what changed and why it matters." required></wa-textarea>
+
+        <div class="form-grid two-up">
+            <wa-select name="productInternalId" label="Related Product">
+                <wa-option value="">No product</wa-option>
+                <wa-option th:each="option : ${productOptions}"
+                           th:value="${option.value}"
+                           th:text="${option.label}">
+                    Product
+                </wa-option>
+            </wa-select>
+
+            <wa-select name="variantInternalId" label="Related Variant">
+                <wa-option value="">No variant</wa-option>
+                <wa-option th:each="option : ${variantOptions}"
+                           th:value="${option.value}"
+                           th:text="${option.label}">
+                    Variant
+                </wa-option>
+            </wa-select>
+        </div>
+
+        <div class="form-actions">
+            <wa-button type="submit" variant="brand">Publish Event</wa-button>
+        </div>
+    </form>
+</section>

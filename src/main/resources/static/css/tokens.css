@@ -1,0 +1,95 @@
+#appRoot {
+    --wop-layout-max-width: 100vw;
+    --wop-radius-card: var(--wa-border-radius-l);
+    --wop-radius-table: var(--wa-border-radius-m);
+    --wop-radius-pill: var(--wa-border-radius-pill);
+    --wop-shadow-card: var(--wa-shadow-s);
+    --wop-shadow-focus: 0 0 0 var(--wa-focus-ring-width) var(--wa-focus-ring-color);
+
+    --wop-space-xs: var(--wa-space-xs);
+    --wop-space-s: var(--wa-space-s);
+    --wop-space-m: var(--wa-space-m);
+    --wop-space-l: var(--wa-space-l);
+    --wop-space-xl: var(--wa-space-xl);
+    --wop-textarea-height: 12.5rem;
+
+    --wop-font-body: var(--wa-font-family-body);
+    --wop-font-heading: var(--wa-font-family-heading);
+    --wop-font-size-s: var(--wa-font-size-s);
+    --wop-font-size-m: var(--wa-font-size-m);
+    --wop-font-size-l: var(--wa-font-size-l);
+    --wop-font-size-xl: var(--wa-font-size-xl);
+    --wop-font-size-2xl: var(--wa-font-size-2xl);
+    --wop-font-size-3xl: var(--wa-font-size-3xl);
+    --wop-font-size-4xl: var(--wa-font-size-4xl);
+    --wop-line-height-normal: var(--wa-line-height-normal);
+    --wop-line-height-condensed: var(--wa-line-height-condensed);
+    --wop-font-weight-semibold: var(--wa-font-weight-semibold);
+    --wop-font-weight-bold: var(--wa-font-weight-bold);
+
+    --wop-color-text: var(--wa-color-text-normal);
+    --wop-color-text-muted: var(--wa-color-text-quiet);
+    --wop-color-surface: var(--wa-color-surface-default);
+    --wop-color-surface-raised: var(--wa-color-surface-raised);
+    --wop-color-border: var(--wa-color-neutral-border-normal);
+    --wop-color-border-subtle: var(--wa-color-neutral-border-subtle);
+    --wop-color-fill: var(--wa-color-neutral-fill-normal);
+    --wop-color-fill-quiet: var(--wa-color-neutral-fill-quiet);
+    --wop-color-fill-loud: var(--wa-color-neutral-fill-loud);
+    --wop-color-accent: var(--wa-color-brand-fill-loud);
+    --wop-color-accent-quiet: var(--wa-color-brand-fill-quiet);
+    --wop-color-accent-text: var(--wa-color-brand-on-loud);
+    --wop-color-positive: var(--wa-color-success-fill-loud);
+    --wop-color-link: var(--wa-color-brand-text-loud);
+
+    --wop-table-row-alt: color-mix(in oklab, var(--wop-color-fill-quiet) 65%, white);
+    --wop-bg-accent-one: color-mix(in oklab, var(--wop-color-accent) 15%, transparent);
+    --wop-bg-accent-two: color-mix(in oklab, var(--wop-color-positive) 20%, transparent);
+    --wop-bg-panel: linear-gradient(
+            145deg,
+            color-mix(in oklab, var(--wop-color-surface-raised) 85%, white),
+            color-mix(in oklab, var(--wop-color-accent-quiet) 15%, var(--wop-color-surface-raised))
+    );
+    /*transition: all ease-in 1s;*/
+}
+
+#appRoot[data-theme="light"] {
+    color-scheme: light;
+}
+
+#appRoot[data-theme="dark"] {
+    color-scheme: dark;
+
+    --wop-color-text: color-mix(in oklab, white 90%, var(--wa-color-text-normal));
+    --wop-color-text-muted: color-mix(in oklab, white 70%, var(--wa-color-text-quiet));
+    --wop-color-surface: color-mix(in oklab, var(--wa-color-surface-default) 25%, black);
+    --wop-color-surface-raised: color-mix(in oklab, var(--wa-color-surface-raised) 30%, black);
+    --wop-color-border: color-mix(in oklab, var(--wa-color-neutral-border-normal) 60%, white);
+    --wop-color-border-subtle: color-mix(in oklab, var(--wa-color-neutral-border-subtle) 45%, white);
+    --wop-color-fill: color-mix(in oklab, var(--wa-color-neutral-fill-normal) 35%, black);
+    --wop-color-fill-quiet: color-mix(in oklab, var(--wa-color-neutral-fill-quiet) 35%, black);
+    --wop-color-fill-loud: color-mix(in oklab, var(--wa-color-neutral-fill-loud) 40%, white);
+    --wop-color-accent: color-mix(in oklab, var(--wa-color-brand-fill-loud) 80%, white);
+    --wop-color-accent-quiet: color-mix(in oklab, var(--wa-color-brand-fill-quiet) 50%, black);
+    --wop-color-accent-text: var(--wa-color-brand-on-loud);
+    --wop-color-positive: color-mix(in oklab, var(--wa-color-success-fill-loud) 75%, white);
+    --wop-color-link: color-mix(in oklab, var(--wa-color-brand-text-loud) 80%, white);
+
+    --wop-table-row-alt: color-mix(in oklab, var(--wop-color-fill-quiet) 70%, black);
+    --wop-bg-accent-one: color-mix(in oklab, var(--wop-color-accent) 25%, transparent);
+    --wop-bg-accent-two: color-mix(in oklab, var(--wop-color-positive) 20%, transparent);
+    --wop-bg-panel: linear-gradient(
+            145deg,
+            color-mix(in oklab, var(--wop-color-surface-raised) 90%, black),
+            color-mix(in oklab, var(--wop-color-accent-quiet) 20%, var(--wop-color-surface-raised))
+    );
+    /*transition: all ease-in 1s;*/
+}
+
+/*wa-button[variant="brand"]::part(base) {*/
+/*    background: cornflowerblue;*/
+/*}*/
+
+/*wa-button[variant="success"]::part(base) {*/
+/*    background: red;*/
+/*}*/

@@ -1,0 +1,6 @@
+name = "tests-agent"
+description = "Create the .http and spring tests for the newly implemented functions"
+developer_instructions = """
+Check and create the appropriate http test cases for the new API controllers, if any, and Spring tests for any
+new changes in the repository, service layer.
+"""

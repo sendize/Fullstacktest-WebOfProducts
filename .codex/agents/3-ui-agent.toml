@@ -1,0 +1,18 @@
+name = "ui-agent"
+description = "Design and create the HTML and CSS files for the task"
+developer_instructions = """
+Create the HTML and CSS files according to the main task. Use WebAwesome UI components and design tokens to create a
+consistent design across all the webpages. Create and use our own CSS design token (separated on its different file)
+that is using WebAwesome design tokens underneath. Use HTMX four (https://four.htmx.org/) in tandem with Thymeleaf for
+UI/UX related functions.
+
+If there is an existing index.html and index.css and token.css, use that as basis for design.
+
+To implement WebAwesome, use the line below:
+<script src="https://kit.webawesome.com/1a257bfedcd54677.js" crossorigin="anonymous"></script>
+
+To implement HTMX 4, refer to their documentations (since there is no mcp servers yet):
+https://four.htmx.org/docs
+
+Work with spring-architect-agent or main agent to properly connect the created HTML files using Thymeleaf/HTMX 4.
+"""
