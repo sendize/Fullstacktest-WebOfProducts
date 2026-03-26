@@ -1,0 +1,39 @@
+<article class="activity-item"
+         th:each="event : ${events}"
+         th:classappend="${event.severity != null ? ' severity-' + event.severity : ''}">
+    <div class="activity-rail">
+        <span class="activity-dot"></span>
+    </div>
+    <div class="activity-content">
+        <div class="activity-topline">
+            <div class="activity-tags">
+                        <span class="activity-pill"
+                              th:text="${event.eventType != null ? event.eventType : 'EVENT'}">EVENT</span>
+                <span class="activity-pill muted"
+                      th:text="${event.severity != null ? event.severity : 'info'}">info</span>
+            </div>
+            <span class="activity-time"
+                  th:text="${event.createdAtLabel != null ? event.createdAtLabel : 'Just now'}">Just now</span>
+        </div>
+
+        <h3 th:text="${event.headline != null ? event.headline : 'Catalog update received'}">Catalog update
+            received</h3>
+        <p th:text="${event.detailText != null ? event.detailText : 'No details supplied.'}">No details
+            supplied.</p>
+
+        <div class="activity-meta">
+                    <span>
+                        <wa-icon name="radar"></wa-icon>
+                        <strong th:text="${event.sourceLabel != null ? event.sourceLabel : 'Catalog Ops'}">Catalog Ops</strong>
+                    </span>
+            <span th:if="${event.productLabel != null}">
+                        <wa-icon name="box"></wa-icon>
+                        <strong th:text="${event.productLabel}">Product</strong>
+                    </span>
+            <span th:if="${event.variantLabel != null}">
+                        <wa-icon name="swatchbook"></wa-icon>
+                        <strong th:text="${event.variantLabel}">Variant</strong>
+                    </span>
+        </div>
+    </div>
+</article>

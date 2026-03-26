@@ -1,0 +1,107 @@
+<section class="display-products" id="productsTableBody" th:fragment="productRows">
+
+    <div th:if="${products.isEmpty()}" class="empty-state">
+        <wa-icon name="box-open" variant="solid"></wa-icon>
+        <h2 class="section-title">No products found.</h2>
+        <p>Load the products, or add a new product.</p>
+    </div>
+
+    <!-- Scrollable container -->
+
+    <div th:if="${!products.isEmpty()}">
+        <wa-scroller orientation="vertical" style="max-height: 600px;">
+            <table>
+                <thead>
+                <tr>
+                    <th style="width: 30%">
+                        <wa-icon name="tag"></wa-icon>
+                        Product Info
+                    </th>
+                    <th style="width: 80%">
+                        <wa-icon name="align-left"></wa-icon>
+                        Description
+
+                    </th>
+                    <th style="width: 10%">
+                        <wa-icon name="wrench"></wa-icon>
+                        Actions
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <th:block th:each="product : ${products}">
+                    <!-- Main Product Row -->
+                    <tr class="product-main-row">
+                        <td>
+                            <div class="product-info-col">
+                                <img th:src="${product.imageUrl}"
+                                     th:alt="${product.title}"
+                                     class="product-image"/>
+
+
+                                <div class="">
+                                    <div class="product-info-col-title" th:text="${product.title}">Product Name</div>
+                                    <div th:if="${!#strings.isEmpty(product.productType)}"
+                                         th:text="${'('+product.productType+')'}"
+                                         class="product-type">
+                                        Product Type
+                                    </div>
+                                    <div class="product-variants">
+                                        <div th:if="${product.variants.isEmpty()}" class="no-variants">
+                                            <wa-icon name="ban"></wa-icon>
+                                            No variants
+                                        </div>
+
+                                        <div th:if="${!product.variants.isEmpty()}">
+                                            <p th:text="${product.variants.size} + ' variants available'"></p>
+                                            <!--                                            <wa-scroller orientation="vertical"-->
+                                            <!--                                                         style="max-height: 170px;&#45;&#45;shadow-size:0">-->
+                                            <!--                                <span th:each="variant : ${product.variants}"-->
+                                            <!--                                      class="badge badge-variant"-->
+                                            <!--                                      th:text="${variant.title}">-->
+                                            <!--                                    Color / Size-->
+                                            <!--                                </span>-->
+                                            <!--                                            </wa-scroller>-->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </td>
+                        <td>
+
+                            <div class="product-description-content">
+                                <wa-scroller orientation="vertical" style="max-height: 200px;" without-shadow>
+                                    <div class="description-text" th:utext="${product.bodyHTML}">
+                                        Product description goes here
+                                    </div>
+                                </wa-scroller>
+                            </div>
+
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a th:href="@{/products/update/{id}(id=${product.internalId})}"
+                                   style="text-decoration: none;">
+                                    <wa-button variant="success" size="small">
+                                        <wa-icon name="edit"></wa-icon>
+                                    </wa-button>
+                                </a>
+                                <wa-button
+                                        variant="danger"
+                                        size="small"
+                                        th:hx-delete="@{/products/{id}(id=${product.internalId})}"
+                                        hx-confirm="Are you sure you want to delete this product?"
+                                        hx-target="#products-container"
+                                        hx-swap="innerHTML">
+                                    <wa-icon name="trash"></wa-icon>
+                                </wa-button>
+                            </div>
+                        </td>
+                    </tr>
+                </th:block>
+                </tbody>
+            </table>
+        </wa-scroller>
+    </div>
+</section>

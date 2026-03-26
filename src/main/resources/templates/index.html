@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Web Of Products</title>
+    <link rel="stylesheet" th:href="@{/css/tokens.css}" href="/css/tokens.css">
+    <link rel="stylesheet" th:href="@{/css/index.css}" href="/css/index.css">
+    <script src="https://kit.webawesome.com/1a257bfedcd54677.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha8/dist/htmx.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/ext/hx-sse.js"></script>
+</head>
+<body>
+<div id="appRoot" class="wrapper" th:fragment="appRoot" th:attr="data-theme=${theme}">
+    <header class="site-header card">
+        <!--        <div class="header-top">-->
+        <!--            <p class="eyebrow">Web Of Products</p>-->
+        <!--            <wa-button id="themeToggleBtn"-->
+        <!--                       variant="neutral"-->
+        <!--                       hx-post="/theme/toggle"-->
+        <!--                       hx-target="#appRoot"-->
+        <!--                       hx-swap="outerHTML"-->
+        <!--                       th:text="${theme == 'dark' ? 'Switch to Light' : 'Switch to Dark'}">-->
+        <!--                Toggle Theme-->
+        <!--            </wa-button>-->
+        <!--        </div>-->
+        <h1 class="title">ProductInventory</h1>
+        <nav class="navigation-links">
+            <ul>
+                <li><a th:href="@{/}">Home</a></li>
+                <li><a th:href="@{/products/showcase}">Showcase</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="page">
+        <section class="load-products">
+            <div>
+                <h2 class="section-title">Inventory</h2>
+                <p>View, manage and add products.</p>
+            </div>
+            <div class="toolbar">
+
+                <wa-button id="loadProductsBtn"
+                           variant="brand"
+                           hx-get="/products/load"
+                           hx-target="#productsTableBody"
+                           hx-swap="outerHTML">
+                    Load Products
+                </wa-button>
+            </div>
+        </section>
+
+        <section class="card add-products">
+            <h2 class="section-title">Add Product</h2>
+            <form id="addProductForm"
+                  hx-post="/products/add"
+                  hx-target="#productsTableBody"
+                  hx-swap="innerHTML">
+                <div class="form-grid">
+                    <wa-input label="Product Name" name="productTitle" required with-clear placeholder="">
+                        <span slot="label">
+                            <wa-icon name="heading"></wa-icon>
+                            Product Name
+                        </span>
+                    </wa-input>
+
+                    <wa-input label="Product Type" name="productType" required with-clear placeholder="">
+                        <span slot="label">
+                            <wa-icon name="tag"></wa-icon>
+                            Product Type
+                        </span>
+                    </wa-input>
+
+                    <wa-textarea label="Product Description" name="productDesc" required with-clear resize="none">
+                         <span slot="label">
+                            <wa-icon name="align-left"></wa-icon>
+                            Product Description
+                        </span>
+                    </wa-textarea>
+
+                    <wa-input label="Image URL" name="imageUrl" type="url" required>
+                        <span slot="label">
+                            <wa-icon name="tag"></wa-icon>
+                            Product Image URL
+                        </span>
+                    </wa-input>
+                </div>
+                <div class="form-actions">
+                    <wa-button type="submit" variant="success">Add Product</wa-button>
+                </div>
+            </form>
+        </section>
+
+        <section class="display-products" id="productsTableBody" th:fragment="productRows">
+            <wa-scroller orientation="vertical" style="max-height: 1000px;">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>
+                            <wa-icon name="tag"></wa-icon>
+                            Product Info
+                        </th>
+                        <th>
+                            <wa-icon name="align-left"></wa-icon>
+                            Description
+
+                        </th>
+                        <th>
+                            <wa-icon name="wrench"></wa-icon>
+                            Actions
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(products)}">
+                        <td colspan="4" class="empty-state">Click "Load Products" to populate the table.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </wa-scroller>
+        </section>
+
+
+    </main>
+
+    <footer class="site-footer card">
+        <small>Web Of Products • Thymeleaf + HTMX + WebAwesome</small>
+    </footer>
+</div>
+
+<script>
+    document.body.addEventListener('htmx:afterRequest', function (event) {
+        console.log("Testing")
+        if (event.target && event.target.id === 'addProductForm' && event.detail.successful) {
+            event.target.reset();
+        }
+    });
+</script>
+</body>
+</html>

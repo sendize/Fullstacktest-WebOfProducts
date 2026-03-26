@@ -1,0 +1,42 @@
+
+### Get all products
+GET {{baseUrl}}/api/products
+Accept: application/json
+
+### Get product by ID
+GET {{baseUrl}}/api/products/{{knownExistingProductId}}
+Accept: application/json
+
+### Create a new product
+POST {{baseUrl}}/api/products
+Content-Type: application/json
+
+{
+  "title": "Test Product",
+  "bodyHTML": "<p>This is a test product</p>",
+  "productType": "Electronics",
+  "imageUrl": "https://example.com/image.jpg"
+}
+
+### Create another product
+POST {{baseUrl}}/api/products
+Content-Type: application/json
+
+{
+  "title": "Sample Widget",
+  "bodyHTML": "<p>Sample widget description</p>",
+  "productType": "Widgets",
+  "imageUrl": "https://example.com/widget.jpg"
+}
+
+### Update a product
+PUT {{baseUrl}}/api/products/{{knownExistingProductId}}
+Content-Type: application/json
+
+{
+  "title": "Updated Product Title",
+  "productType": "Updated Type"
+}
+
+### Delete a product
+DELETE {{baseUrl}}/api/products/{{knownExistingProductId}}

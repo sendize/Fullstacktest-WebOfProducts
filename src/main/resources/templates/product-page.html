@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Web Of Products | Product Spotlight</title>
+    <link rel="stylesheet" th:href="@{/css/tokens.css}" href="/css/tokens.css">
+    <link rel="stylesheet" th:href="@{/css/index.css}" href="/css/index.css">
+    <link rel="stylesheet" th:href="@{/css/product-page.css}" href="/css/product-page.css">
+    <script src="https://kit.webawesome.com/1a257bfedcd54677.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha8/dist/htmx.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/ext/hx-sse.js"></script>
+    <link rel="stylesheet" href="../static/css/product-page.css">
+</head>
+<body>
+<div id="appRoot" class="wrapper" th:fragment="appRoot" data-theme="dark">
+    <header class="site-header card">
+        <div>
+            <p class="eyebrow">Web Of Products</p>
+            <h1 class="title">Product Spotlight</h1>
+        </div>
+        <nav class="navigation-links" aria-label="Primary">
+            <ul>
+                <li><a th:href="@{/}" href="/">Home</a></li>
+                <li><a th:href="@{/products/showcase}" href="/products/showcase">Showcase</a></li>
+                <li><a href="#productDetails">Details</a></li>
+                <li><a href="#reviews">Reviews</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="page product-page">
+        <section class="catalog-rail card" th:if="${!catalogProducts.isEmpty()}">
+            <div class="panel-headline">
+                <p class="eyebrow">Browse catalog</p>
+                <h2 class="section-title">Switch featured products instantly with HTMX</h2>
+            </div>
+            <div class="catalog-switcher">
+                <a th:each="catalogProduct : ${catalogProducts}"
+                   class="catalog-pill"
+                   th:classappend="${catalogProduct.internalId == featuredProduct.internalId} ? ' is-active' : ''"
+                   th:href="@{/products/showcase/{id}(id=${catalogProduct.internalId})}"
+                   th:hx-get="@{/products/showcase/{id}/experience(id=${catalogProduct.internalId})}"
+                   hx-target="#showcaseContent"
+                   hx-swap="outerHTML"
+                   th:text="${catalogProduct.title}">
+                    Product name
+                </a>
+            </div>
+        </section>
+
+        <div id="showcaseContent" class="showcase-content" th:fragment="showcaseContent">
+            <section class="product-hero card" id="productExperience">
+                <div class="product-gallery">
+                    <div class="gallery-main">
+                        <span class="gallery-badge" th:text="${featuredBadge}">Editor Pick</span>
+                        <img class="hero-product-image"
+                             th:src="${heroImageUrl}"
+                             th:alt="${featuredProduct.title}"
+                             src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80"
+                             alt="Featured product image">
+                    </div>
+
+                    <div class="gallery-thumbs" aria-label="Variant selector" th:if="${!variantOptions.isEmpty()}">
+                        <a th:each="variant : ${variantOptions}"
+                           class="thumb thumb-link"
+                           th:classappend="${selectedVariant != null and variant.internalId == selectedVariant.internalId} ? ' is-active' : ''"
+                           th:href="@{/products/showcase/{id}(id=${featuredProduct.internalId}, variantId=${variant.internalId})}"
+                           th:hx-get="@{/products/showcase/{id}/experience(id=${featuredProduct.internalId}, variantId=${variant.internalId})}"
+                           hx-target="#showcaseContent"
+                           hx-swap="outerHTML">
+                            <img th:src="${variant.imageUrl}"
+                                 th:alt="${variant.title}"
+                                 src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=400&q=80"
+                                 alt="Variant image">
+                        </a>
+                    </div>
+                </div>
+
+                <div class="product-summary">
+                    <div class="summary-copy">
+                        <p class="eyebrow" th:text="${featuredProduct.productType}">Studio Series</p>
+                        <h2 class="product-name" th:text="${featuredProduct.title}">Product Name</h2>
+                        <div class="product-tagline" th:utext="${featuredProduct.bodyHTML}">
+                            Product description
+                        </div>
+                    </div>
+
+                    <div class="review-row">
+                        <div class="rating-pill">
+                            <wa-icon name="star"></wa-icon>
+                            <strong th:text="${ratingLabel}">4.8</strong>
+                            <span th:text="${reviewLabel}">2,148 reviews</span>
+                        </div>
+                        <span class="stock-pill" th:text="${availabilityLabel}">In stock for dispatch</span>
+                    </div>
+
+                    <div class="price-block">
+                        <div>
+                            <p class="price-label"
+                               th:text="${selectedVariant != null} ? 'Selected variant' : 'Featured product'">Featured
+                                product</p>
+                            <div class="price-row">
+                                <strong class="price-current" th:text="${priceLabel}">$189</strong>
+                                <span class="price-original" th:if="${originalPriceLabel != null}"
+                                      th:text="${originalPriceLabel}">$229</span>
+                            </div>
+                        </div>
+                        <p class="price-note" th:text="${shippingLabel}">Free shipping and 30-day returns included.</p>
+                    </div>
+
+                    <div class="feature-chips">
+                        <span th:each="chip : ${featureChips}" th:text="${chip}">Feature</span>
+                    </div>
+
+                    <div class="purchase-panel card" id="productDetails" th:fragment="purchasePanel">
+                        <div class="purchase-grid">
+                            <div class="field-card">
+                                <span class="price-label">Product Type</span>
+                                <strong th:text="${featuredProduct.productType}">Keyboard</strong>
+                            </div>
+
+                            <div class="field-card">
+                                <span class="price-label">Variant</span>
+                                <strong th:text="${selectedVariant != null ? selectedVariant.title : defaultVariantLabel}">Default</strong>
+                            </div>
+
+                            <div class="field-card">
+                                <span class="price-label">SKU</span>
+                                <strong th:text="${selectedVariant != null ? selectedVariant.sku : 'Base product'}">SKU-001</strong>
+                            </div>
+                        </div>
+
+                        <div class="purchase-actions">
+                            <wa-button variant="brand" size="large">Add to Cart</wa-button>
+                            <wa-button variant="neutral" size="large">Save for Later</wa-button>
+                        </div>
+
+                        <div class="trust-list">
+                            <div>
+                                <wa-icon name="truck"></wa-icon>
+                                <span th:text="${shippingLabel}">Ships in 24 hours</span>
+                            </div>
+                            <div>
+                                <wa-icon name="shield-check"></wa-icon>
+                                <span>Protected checkout</span>
+                            </div>
+                            <div>
+                                <wa-icon name="arrow-uturn-left"></wa-icon>
+                                <span>Easy 30-day returns</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <section class="specs-panel card">
+                <div class="panel-headline">
+                    <p class="eyebrow">Technical overview</p>
+                    <h2 class="section-title">Structured details wired through Thymeleaf</h2>
+                </div>
+                <div class="spec-grid">
+                    <div class="spec-card">
+                        <span class="spec-label">Variants</span>
+                        <strong th:text="${variantCountLabel}">3 options</strong>
+                        <p th:text="${variantSpecBody}">Each variant can become the active page state through an HTMX
+                            fragment request.</p>
+                    </div>
+                    <div class="spec-card">
+                        <span class="spec-label">Pricing</span>
+                        <strong th:text="${priceLabel}">$189</strong>
+                        <p th:text="${priceSpecBody}">The hero section reflects the selected variant price when variant
+                            data is available.</p>
+                    </div>
+                    <div class="spec-card">
+                        <span class="spec-label">Media</span>
+                        <strong th:text="${heroMediaLabel}">Primary image</strong>
+                        <p th:text="${mediaSpecBody}">The main image swaps automatically to match the selected variant,
+                            falling back to the product image.</p>
+                    </div>
+                    <div class="spec-card">
+                        <span class="spec-label">Fallback mode</span>
+                        <strong th:text="${fallbackModeLabel}">Live catalog</strong>
+                        <p th:text="${fallbackSpecBody}">If the catalog is empty, the controller provides a safe demo
+                            product so the page still renders.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="reviews-panel card" id="reviews">
+                <div class="panel-headline">
+                    <p class="eyebrow">Customer feedback</p>
+                    <h2 class="section-title">What recent buyers are saying</h2>
+                </div>
+
+                <div class="review-layout">
+                    <div class="review-highlight">
+                        <strong th:text="${ratingLabel}">4.8</strong>
+                        <p th:text="${reviewSummary}">Most buyers praise the build quality and quick setup.</p>
+                        <div class="review-bars">
+                            <div><span>Design</span>
+                                <div class="bar"><i style="width: 94%"></i></div>
+                            </div>
+                            <div><span>Value</span>
+                                <div class="bar"><i style="width: 88%"></i></div>
+                            </div>
+                            <div><span>Reliability</span>
+                                <div class="bar"><i style="width: 91%"></i></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="review-list">
+                        <article class="review-card">
+                            <div class="review-card-head">
+                                <strong>Verified buyer</strong>
+                                <span th:text="${featuredProduct.title}">Product title</span>
+                            </div>
+                            <p th:text="${primaryReviewQuote}">The selected product looks great and the page updates
+                                quickly.</p>
+                        </article>
+                        <article class="review-card">
+                            <div class="review-card-head">
+                                <strong>Variant note</strong>
+                                <span th:text="${selectedVariant != null ? selectedVariant.title : defaultVariantLabel}">Default variant</span>
+                            </div>
+                            <p th:text="${secondaryReviewQuote}">Switching variants updates the image and purchase
+                                details
+                                without leaving the page.</p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="site-footer card">
+        <small>Web Of Products • Product detail concept built with Thymeleaf + HTMX + WebAwesome</small>
+    </footer>
+</div>
+</body>
+</html>

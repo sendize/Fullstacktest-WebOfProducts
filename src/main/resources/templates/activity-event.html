@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:hx-sse="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Web Of Products | Catalog Pulse</title>
+    <link rel="stylesheet" th:href="@{/css/tokens.css}" href="/css/tokens.css">
+    <link rel="stylesheet" th:href="@{/css/index.css}" href="/css/index.css">
+    <link rel="stylesheet" th:href="@{/css/activity-event.css}" href="/css/activity-event.css">
+    <script th:src="@{/js/product-page.js}" src="/js/product-page.js" defer></script>
+    <script src="https://kit.webawesome.com/1a257bfedcd54677.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/ext/hx-sse.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/ext/hx-preload.js"></script>
+
+    <meta name="htmx-config" content='{"defaultFocusScroll":true}'>
+</head>
+<body>
+<div id="appRoot" class="wrapper" th:fragment="appRoot">
+    <header class="site-header card">
+        <div>
+            <p class="eyebrow">Web Of Products</p>
+            <h1 class="title">Catalog Pulse</h1>
+            <p class="subtitle">A live operations view for catalog activity, feature launches, and merchandising
+                incidents.</p>
+        </div>
+        <nav class="navigation-links" aria-label="Primary">
+            <ul>
+                <li><a th:href="@{/}" href="/">Home</a></li>
+                <li><a th:href="@{/products/showcase}" href="/products/showcase">Showcase</a></li>
+                <li><a th:href="@{/internal-events}" href="/internal-events">Internal Events</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="page pulse-page">
+        <div id="test">
+
+        </div>
+    </main>
+
+    <main class="page pulse-page">
+        <div id="pulseSseRoot"
+             class="pulse-sse-source"
+             hx-sse:connect="/internal-events/stream"
+             hx-trigger="load delay:2s"
+             hx-target="#eventStreamFeeed"
+             hx-swap="prepend">
+            <!--            hx-select-oob="#activity-list"-->
+            <!--            hx-swap-oob="prepend"-->
+
+        </div>
+
+
+        <section class="pulse-hero card">
+            <div class="hero-copy">
+                <p class="eyebrow">SSE Monitoring</p>
+                <h2 class="hero-title">Watch the catalog change as events are created.</h2>
+                <p class="hero-body">
+                    This page uses HTMX Server-Sent Events to stream live metrics and feed updates into the dashboard
+                    without polling or full page reloads.
+                </p>
+            </div>
+
+            <div class="hero-status">
+                <div class="status-chip">
+                    <span class="live-dot" aria-hidden="true"></span>
+                    <span>Listening to <code>/internal-events/stream</code></span>
+                </div>
+            </div>
+        </section>
+
+        <div class="pulse-stream">
+            <aside class="composer-column">
+                <section id="eventFormShell" class="card pulse-form-shell"
+                         th:fragment="eventForm"
+                         hx-get="/internal-events/fragments/form"
+                         hx-swap="outerHTML transition:true swap:2s"
+                         hx-trigger="load"
+                         hx-indicator="#spinner" preload>
+                    Loading Form
+                </section>
+
+
+                <section class="card support-card">
+                    <div class="support-card-head">
+                        <p class="eyebrow">How this fits</p>
+                        <h2 class="section-title">Useful with the current pages</h2>
+                    </div>
+                    <div class="support-points">
+                        <article>
+                            <wa-icon name="database"></wa-icon>
+                            <div>
+                                <strong>Inventory events</strong>
+                                <p>Track imports, product edits, and variant issues alongside the inventory page.</p>
+                            </div>
+                        </article>
+                        <article>
+                            <wa-icon name="sparkles"></wa-icon>
+                            <div>
+                                <strong>Showcase launches</strong>
+                                <p>Broadcast featured product promotions and merchandising changes tied to the showcase
+                                    page.</p>
+                            </div>
+                        </article>
+                        <article>
+                            <wa-icon name="triangle-exclamation"></wa-icon>
+                            <div>
+                                <strong>Operational triage</strong>
+                                <p>Call out critical catalog problems without forcing operators to refresh the
+                                    dashboard.</p>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+            </aside>
+
+            <div class="dashboard-column">
+                <!--                <div id="metricsContent"-->
+                <!--                     hx-get="/catalog-pulse/fragments/metrics"-->
+                <!--                     hx-trigger="load">-->
+                <!--                    Loading metrics-->
+                <!--                </div>-->
+
+
+                <!--                <div id="feedContent"-->
+                <!--                     hx-get="/catalog-pulse/fragments/feed"-->
+                <!--                     hx-trigger="load">-->
+                <!--                    Loading feed-->
+                <!--                </div>-->
+
+                <div id="metricsContent"
+                     th:insert="~{fragments/activity-event-metrics :: metricsContent}">
+                    Loading metrics
+                </div>
+
+
+                <div id="feedContent"
+                     th:insert="~{fragments/activity-event-feed :: activityFeed}">
+                    Loading feed
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer card">
+        <small>Web Of Products • Catalog Pulse • Thymeleaf + HTMX SSE + WebAwesome</small>
+    </footer>
+</div>
+</body>
+</html>
