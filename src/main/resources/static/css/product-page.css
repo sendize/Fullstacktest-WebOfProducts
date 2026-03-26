@@ -1,3 +1,11 @@
+.reviews-panel {
+    --review-surface: var(--wop-color-surface);
+    --review-panel: var(--wop-bg-panel);
+    --review-border: var(--wop-color-border);
+    --review-muted: var(--wop-color-text-muted);
+    --review-accent-soft: color-mix(in srgb, var(--wop-color-accent) 12%, transparent);
+}
+
 .product-page {
     align-items: start;
 }
@@ -348,6 +356,7 @@
     display: grid;
     grid-template-columns: minmax(16rem, 0.8fr) minmax(0, 1.2fr);
     gap: var(--wop-space-l);
+    align-items: start;
 }
 
 .review-highlight {
@@ -367,6 +376,31 @@
     display: grid;
     gap: var(--wop-space-s);
     margin-top: var(--wop-space-m);
+}
+
+.review-metric-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--wop-space-s);
+    margin-top: var(--wop-space-l);
+}
+
+.review-metric-card {
+    padding: var(--wop-space-m);
+    border-radius: var(--wop-radius-card);
+    border: 1px solid var(--review-border);
+    background: var(--review-surface);
+}
+
+.review-metric-card strong {
+    display: block;
+    margin-top: var(--wop-space-xs);
+    font-family: var(--wop-font-heading);
+    line-height: var(--wop-line-height-condensed);
+}
+
+.review-metric-card p {
+    margin-top: var(--wop-space-s);
 }
 
 .review-bars div {
@@ -394,9 +428,65 @@
     background: linear-gradient(90deg, var(--wop-color-accent), var(--wop-color-positive));
 }
 
+.reviews-content {
+    display: grid;
+    gap: var(--wop-space-m);
+}
+
+.review-tools,
+.review-form-shell,
+.review-list-shell {
+    padding: var(--wop-space-l);
+    border-radius: var(--wop-radius-card);
+    border: 1px solid var(--review-border);
+    background: var(--review-panel);
+}
+
+.review-tools-head,
+.review-list-head {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: var(--wop-space-m);
+    flex-wrap: wrap;
+}
+
+.review-tools-title {
+    margin: 0.25rem 0 0;
+    font-family: var(--wop-font-heading);
+    font-size: clamp(var(--wop-font-size-l), 2.6vw, var(--wop-font-size-xl));
+    line-height: var(--wop-line-height-condensed);
+}
+
+.review-sort-form {
+    display: flex;
+    align-items: end;
+    gap: var(--wop-space-s);
+    flex-wrap: wrap;
+}
+
+.review-sort-form wa-select {
+    min-width: min(100%, 16rem);
+}
+
 .review-list {
     display: grid;
     gap: var(--wop-space-m);
+    margin-top: var(--wop-space-m);
+}
+
+.review-list-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.5rem;
+    padding: 0.55rem 0.9rem;
+    border-radius: var(--wop-radius-pill);
+    border: 1px solid var(--review-border);
+    background: var(--wop-color-fill-quiet);
+    color: var(--review-muted);
+    font-size: var(--wop-font-size-s);
+    font-weight: var(--wop-font-weight-semibold);
 }
 
 .review-card {
@@ -413,9 +503,97 @@
     align-items: center;
 }
 
-.review-card-head span {
+.review-card-head span,
+.review-card-subhead span,
+.review-form-note {
     color: var(--wop-color-text-muted);
     font-size: var(--wop-font-size-s);
+}
+
+.review-card-meta {
+    display: block;
+    margin-top: 0.15rem;
+}
+
+.review-card-subhead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--wop-space-s);
+    flex-wrap: wrap;
+    margin-top: var(--wop-space-s);
+    padding-top: var(--wop-space-s);
+    border-top: 1px solid var(--wop-color-border-subtle);
+}
+
+.review-rating-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.8rem;
+    border-radius: var(--wop-radius-pill);
+    background: var(--review-accent-soft);
+    color: var(--wop-color-text);
+    font-weight: var(--wop-font-weight-semibold);
+}
+
+.review-rating-badge wa-icon {
+    color: var(--wop-color-accent);
+}
+
+.review-empty-state {
+    border-style: dashed;
+}
+
+.review-form-status {
+    min-height: 0;
+}
+
+.form-notice {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-top: var(--wop-space-m);
+    padding: 0.75rem 0.95rem;
+    border-radius: var(--wop-radius-pill);
+    border: 1px solid color-mix(in srgb, var(--wop-color-positive) 28%, var(--review-border));
+    background: color-mix(in srgb, var(--wop-color-positive) 12%, transparent);
+    color: var(--wop-color-text);
+}
+
+.form-notice wa-icon {
+    color: var(--wop-color-positive);
+}
+
+.form-notice.is-error {
+    border-color: color-mix(in srgb, var(--wop-color-danger) 28%, var(--review-border));
+    background: color-mix(in srgb, var(--wop-color-danger) 12%, transparent);
+}
+
+.form-notice.is-error wa-icon {
+    color: var(--wop-color-danger);
+}
+
+.review-form {
+    display: grid;
+    gap: var(--wop-space-m);
+    margin-top: var(--wop-space-m);
+}
+
+.form-grid.two-up {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--wop-space-m);
+}
+
+.review-form wa-textarea::part(base),
+.review-form wa-select::part(combobox),
+.review-form wa-input::part(base) {
+    background: var(--review-surface);
+}
+
+.review-form-actions {
+    justify-content: flex-start;
 }
 
 @media (max-width: 1024px) {
@@ -427,7 +605,9 @@
     .story-grid,
     .spec-grid,
     .purchase-grid,
-    .trust-list {
+    .trust-list,
+    .review-metric-grid,
+    .form-grid.two-up {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
@@ -438,7 +618,9 @@
     .story-grid,
     .spec-grid,
     .purchase-grid,
-    .trust-list {
+    .trust-list,
+    .review-metric-grid,
+    .form-grid.two-up {
         grid-template-columns: 1fr;
     }
 
@@ -449,6 +631,12 @@
 
     .purchase-actions {
         flex-direction: column;
+    }
+
+    .review-tools,
+    .review-form-shell,
+    .review-list-shell {
+        padding: var(--wop-space-m);
     }
 }
 
@@ -473,5 +661,19 @@
 
     .thumb img {
         height: 5.5rem;
+    }
+
+    .review-card-head,
+    .review-card-subhead,
+    .review-tools-head,
+    .review-list-head,
+    .review-sort-form {
+        align-items: stretch;
+    }
+
+    .review-rating-badge,
+    .review-list-count {
+        width: 100%;
+        justify-content: center;
     }
 }

@@ -9,12 +9,9 @@
     <link rel="stylesheet" th:href="@{/css/product-page.css}" href="/css/product-page.css">
     <script src="https://kit.webawesome.com/1a257bfedcd54677.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha8/dist/htmx.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/ext/hx-sse.js"></script>
-    <link rel="stylesheet" href="../static/css/product-page.css">
 </head>
 <body>
-<div id="appRoot" class="wrapper" th:fragment="appRoot" data-theme="dark">
+<div id="appRoot" class="wrapper" th:fragment="appRoot" data-theme="light">
     <header class="site-header card">
         <div>
             <p class="eyebrow">Web Of Products</p>
@@ -189,47 +186,214 @@
                 </div>
             </section>
 
-            <section class="reviews-panel card" id="reviews">
+            <section class="reviews-panel card" id="reviews" th:fragment="reviewsSection">
                 <div class="panel-headline">
                     <p class="eyebrow">Customer feedback</p>
-                    <h2 class="section-title">What recent buyers are saying</h2>
+                    <h2 class="section-title">Ratings and comments for this product</h2>
                 </div>
 
                 <div class="review-layout">
                     <div class="review-highlight">
                         <strong th:text="${ratingLabel}">4.8</strong>
-                        <p th:text="${reviewSummary}">Most buyers praise the build quality and quick setup.</p>
+                        <p th:text="${reviewSummary}">Recent comments highlight fast setup, solid quality, and a
+                            polished product experience.</p>
                         <div class="review-bars">
-                            <div><span>Design</span>
-                                <div class="bar"><i style="width: 94%"></i></div>
+                            <div>
+                                <span>5-star ratings</span>
+                                <div class="bar">
+                                    <i th:style="'width:' + (${fiveStarShare != null ? fiveStarShare : 0}) + '%'"></i>
+                                </div>
                             </div>
-                            <div><span>Value</span>
-                                <div class="bar"><i style="width: 88%"></i></div>
+                            <div>
+                                <span>4-star ratings</span>
+                                <div class="bar">
+                                    <i th:style="'width:' + (${fourStarShare != null ? fourStarShare : 0}) + '%'"></i>
+                                </div>
                             </div>
-                            <div><span>Reliability</span>
-                                <div class="bar"><i style="width: 91%"></i></div>
+                            <div>
+                                <span>3-star and below</span>
+                                <div class="bar">
+                                    <i th:style="'width:' + (${threeStarAndBelowShare != null ? threeStarAndBelowShare : 0}) + '%'"></i>
+                                </div>
                             </div>
+                        </div>
+
+                        <div class="review-metric-grid">
+                            <article class="review-metric-card">
+                                <span class="spec-label">Comments</span>
+                                <strong th:text="${commentCountLabel}">0 comments</strong>
+                                <p>Persisted at the product level, regardless of selected variant.</p>
+                            </article>
+                            <article class="review-metric-card">
+                                <span class="spec-label">Current sort</span>
+                                <strong th:text="${activeSortLabel}">Highest rated first</strong>
+                                <p>Use the sort control to reorder the comment feed without leaving the page.</p>
+                            </article>
                         </div>
                     </div>
 
-                    <div class="review-list">
-                        <article class="review-card">
-                            <div class="review-card-head">
-                                <strong>Verified buyer</strong>
-                                <span th:text="${featuredProduct.title}">Product title</span>
+                    <div class="reviews-content">
+                        <section class="review-tools card">
+                            <div class="review-tools-head">
+                                <div>
+                                    <p class="eyebrow">Sort comments</p>
+                                    <h3 class="review-tools-title">Order by rating</h3>
+                                </div>
+
+                                <form class="review-sort-form"
+                                      th:action="@{/products/showcase/{id}/reviews(id=${featuredProduct.internalId})}"
+                                      th:hx-get="@{/products/showcase/{id}/reviews(id=${featuredProduct.internalId})}"
+                                      hx-target="#reviews"
+                                      hx-swap="outerHTML">
+                                    <input type="hidden" name="variantId"
+                                           th:value="${selectedVariant != null ? selectedVariant.internalId : ''}">
+                                    <wa-select name="sort"
+                                               label="Sort comments"
+                                               th:value="${activeSort != null ? activeSort : 'rating-desc'}">
+                                        <wa-option value="rating-desc">Highest to lowest</wa-option>
+                                        <wa-option value="rating-asc">Lowest to highest</wa-option>
+                                    </wa-select>
+                                    <wa-button type="submit" variant="neutral">Apply Sort</wa-button>
+                                </form>
                             </div>
-                            <p th:text="${primaryReviewQuote}">The selected product looks great and the page updates
-                                quickly.</p>
-                        </article>
-                        <article class="review-card">
-                            <div class="review-card-head">
-                                <strong>Variant note</strong>
-                                <span th:text="${selectedVariant != null ? selectedVariant.title : defaultVariantLabel}">Default variant</span>
+                        </section>
+
+                        <div class="review-list-shell">
+                            <div class="review-list-head">
+                                <div>
+                                    <p class="eyebrow">Comment feed</p>
+                                    <h3 class="review-tools-title">Recent product comments</h3>
+                                </div>
+                                <span class="review-list-count" th:text="${commentCountLabel}">0 comments</span>
                             </div>
-                            <p th:text="${secondaryReviewQuote}">Switching variants updates the image and purchase
-                                details
-                                without leaving the page.</p>
-                        </article>
+
+                            <div class="review-list" th:fragment="reviewList">
+                                <article class="review-card" th:each="productComment : ${productComments}">
+                                    <div class="review-card-head">
+                                        <div>
+                                            <strong th:text="${productComment.name}">Buyer name</strong>
+                                            <span class="review-card-meta"
+                                                  th:text="${productComment.email}">buyer@example.com</span>
+                                        </div>
+
+                                        <div class="review-rating-badge">
+                                            <wa-icon name="star"></wa-icon>
+                                            <span th:text="${productComment.rating} + '/5'">5/5</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="review-card-subhead">
+                                        <span th:text="${productComment.variantTitle != null ? productComment.variantTitle : 'Base product review'}">Base product review</span>
+                                        <span th:text="${productComment.createdAtLabel != null ? productComment.createdAtLabel : 'Just now'}">Just now</span>
+                                    </div>
+
+                                    <p th:text="${productComment.comment}">Detailed comment goes here.</p>
+                                </article>
+
+                                <article class="review-card review-empty-state"
+                                         th:if="${productComments == null or #lists.isEmpty(productComments)}">
+                                    <div class="review-card-head">
+                                        <strong>No comments yet</strong>
+                                        <span>Be the first to rate this product</span>
+                                    </div>
+                                    <p>Submit a product comment below. Ratings are saved for the product and can
+                                        optionally mention a specific variant.</p>
+                                </article>
+                            </div>
+                        </div>
+
+                        <section class="review-form-shell card">
+                            <div class="review-tools-head">
+                                <div>
+                                    <p class="eyebrow">Leave a comment</p>
+                                    <h3 class="review-tools-title">Share a rating for this product</h3>
+                                </div>
+                                <p class="review-form-note">Comments are stored against <span
+                                        th:text="${featuredProduct.title}">this product</span>.</p>
+                            </div>
+
+                            <div id="reviewFormStatus" class="review-form-status">
+                                <div class="form-notice"
+                                     th:classappend="${commentNoticeIsError} ? ' is-error' : ''"
+                                     th:if="${commentSubmissionNotice != null and !#strings.isEmpty(commentSubmissionNotice)}">
+                                    <wa-icon th:name="${commentNoticeIsError} ? 'circle-alert' : 'circle-check'"
+                                             name="circle-check"></wa-icon>
+                                    <span th:text="${commentSubmissionNotice}">Comment saved.</span>
+                                </div>
+                            </div>
+
+                            <form class="review-form"
+                                  th:action="@{/products/showcase/{id}/reviews(id=${featuredProduct.internalId})}"
+                                  th:hx-post="@{/products/showcase/{id}/reviews(id=${featuredProduct.internalId})}"
+                                  hx-target="#reviews"
+                                  hx-swap="outerHTML">
+                                <input type="hidden" name="sort"
+                                       th:value="${activeSort != null ? activeSort : 'rating-desc'}">
+                                <input type="hidden" name="selectedVariantId"
+                                       th:value="${selectedVariant != null ? selectedVariant.internalId : ''}">
+
+                                <div class="form-grid two-up">
+                                    <wa-input name="name"
+                                              label="Name"
+                                              required
+                                              th:value="${commentForm != null ? commentForm.name : ''}">
+                                        <span slot="label">
+                                            <wa-icon name="user"></wa-icon>
+                                            Name
+                                        </span>
+                                    </wa-input>
+
+                                    <wa-input name="email"
+                                              type="email"
+                                              label="Email"
+                                              required
+                                              th:value="${commentForm != null ? commentForm.email : ''}">
+                                        <span slot="label">
+                                            <wa-icon name="envelope"></wa-icon>
+                                            Email
+                                        </span>
+                                    </wa-input>
+                                </div>
+
+                                <div class="form-grid two-up">
+                                    <wa-select name="rating"
+                                               label="Rating"
+                                               th:value="${commentForm != null and commentForm.rating != null ? commentForm.rating : '5'}">
+                                        <wa-option value="5">5 stars</wa-option>
+                                        <wa-option value="4">4 stars</wa-option>
+                                        <wa-option value="3">3 stars</wa-option>
+                                        <wa-option value="2">2 stars</wa-option>
+                                        <wa-option value="1">1 star</wa-option>
+                                    </wa-select>
+
+                                    <wa-select name="variantId"
+                                               label="Variant (optional)"
+                                               th:value="${commentForm != null and commentForm.variantId != null ? commentForm.variantId : ''}">
+                                        <wa-option value="">Base product</wa-option>
+                                        <wa-option th:each="variant : ${reviewVariantOptions}"
+                                                   th:value="${variant.internalId}"
+                                                   th:text="${variant.title}">
+                                            Variant
+                                        </wa-option>
+                                    </wa-select>
+                                </div>
+
+                                <wa-textarea name="comment"
+                                             label="Comment"
+                                             resize="auto"
+                                             required
+                                             th:text="${commentForm != null ? commentForm.comment : ''}">
+                                    <span slot="label">
+                                        <wa-icon name="message"></wa-icon>
+                                        Comment
+                                    </span>
+                                </wa-textarea>
+
+                                <div class="form-actions review-form-actions">
+                                    <wa-button type="submit" variant="brand">Save Comment</wa-button>
+                                </div>
+                            </form>
+                        </section>
                     </div>
                 </div>
             </section>

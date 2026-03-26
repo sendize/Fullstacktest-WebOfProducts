@@ -3,6 +3,8 @@ package com.ihl.webofproducts.controllers.web
 import com.ihl.webofproducts.database.model.Product
 import com.ihl.webofproducts.database.model.ProductVariant
 import com.ihl.webofproducts.database.repository.ProductRepository
+import com.ihl.webofproducts.service.ProductCommentForm
+import com.ihl.webofproducts.service.ProductReviewService
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
@@ -15,7 +17,8 @@ import java.util.Locale
 
 @Controller
 class ProductPageController(
-    private val productRepository: ProductRepository
+    private val productRepository: ProductRepository,
+    private val productReviewService: ProductReviewService,
 ) {
 
     private val usdCurrencyFormat = NumberFormat.getCurrencyInstance(Locale.US)
@@ -33,12 +36,13 @@ class ProductPageController(
     fun productShowcase(
         @RequestParam(required = false) productId: String?,
         @RequestParam(required = false) variantId: String?,
+        @RequestParam(required = false, defaultValue = "rating-desc") sort: String,
         model: Model,
     ): String {
         val catalog = loadCatalog()
         val featuredProduct = resolveProduct(catalog, productId)
         val selectedVariant = resolveVariant(featuredProduct, variantId)
-        populateShowcaseModel(model, catalog, featuredProduct, selectedVariant)
+        populateShowcaseModel(model, catalog, featuredProduct, selectedVariant, sort)
         return "product-page"
     }
 
@@ -46,12 +50,13 @@ class ProductPageController(
     fun productShowcaseById(
         @PathVariable id: String,
         @RequestParam(required = false) variantId: String?,
+        @RequestParam(required = false, defaultValue = "rating-desc") sort: String,
         model: Model,
     ): String {
         val catalog = loadCatalog()
         val featuredProduct = resolveProduct(catalog, id)
         val selectedVariant = resolveVariant(featuredProduct, variantId)
-        populateShowcaseModel(model, catalog, featuredProduct, selectedVariant)
+        populateShowcaseModel(model, catalog, featuredProduct, selectedVariant, sort)
         return "product-page"
     }
 
@@ -59,13 +64,67 @@ class ProductPageController(
     fun productShowcaseExperience(
         @PathVariable id: String,
         @RequestParam(required = false) variantId: String?,
+        @RequestParam(required = false, defaultValue = "rating-desc") sort: String,
         model: Model,
     ): String {
         val catalog = loadCatalog()
         val featuredProduct = resolveProduct(catalog, id)
         val selectedVariant = resolveVariant(featuredProduct, variantId)
-        populateShowcaseModel(model, catalog, featuredProduct, selectedVariant)
+        populateShowcaseModel(model, catalog, featuredProduct, selectedVariant, sort)
         return "product-page :: showcaseContent"
+    }
+
+    @GetMapping("/products/showcase/{id}/reviews")
+    fun productReviews(
+        @PathVariable id: String,
+        @RequestParam(required = false) variantId: String?,
+        @RequestParam(required = false, defaultValue = "rating-desc") sort: String,
+        model: Model,
+    ): String {
+        val catalog = loadCatalog()
+        val featuredProduct = resolveProduct(catalog, id)
+        val selectedVariant = resolveVariant(featuredProduct, variantId)
+        populateShowcaseModel(model, catalog, featuredProduct, selectedVariant, sort)
+        return "product-page :: reviewsSection"
+    }
+
+    @PostMapping("/products/showcase/{id}/reviews")
+    fun submitProductReview(
+        @PathVariable id: String,
+        @RequestParam name: String,
+        @RequestParam email: String,
+        @RequestParam comment: String,
+        @RequestParam rating: Int,
+        @RequestParam(required = false) variantId: String?,
+        @RequestParam(required = false) selectedVariantId: String?,
+        @RequestParam(required = false, defaultValue = "rating-desc") sort: String,
+        model: Model,
+    ): String {
+        val catalog = loadCatalog()
+        val featuredProduct = resolveProduct(catalog, id)
+        val selectedVariant = resolveVariant(featuredProduct, selectedVariantId)
+        val submissionResult = productReviewService.submitReview(
+            featuredProduct,
+            ProductCommentForm(
+                name = name,
+                email = email,
+                comment = comment,
+                rating = rating,
+                variantId = variantId,
+            )
+        )
+
+        populateShowcaseModel(
+            model = model,
+            catalog = catalog,
+            featuredProduct = featuredProduct,
+            selectedVariant = selectedVariant,
+            sort = sort,
+            commentForm = submissionResult.form,
+            commentSubmissionNotice = submissionResult.notice,
+            commentNoticeIsError = submissionResult.isError,
+        )
+        return "product-page :: reviewsSection"
     }
 
     @GetMapping("/products/load")
@@ -109,20 +168,24 @@ class ProductPageController(
         catalog: List<Product>,
         featuredProduct: Product,
         selectedVariant: ProductVariant?,
+        sort: String,
+        commentForm: ProductCommentForm = ProductCommentForm(),
+        commentSubmissionNotice: String? = null,
+        commentNoticeIsError: Boolean = false,
     ) {
         val featureChips = buildFeatureChips(featuredProduct, selectedVariant)
-        val reviewCount = (featuredProduct.variants.size * 287).coerceAtLeast(128)
-        val rating = if (selectedVariant != null) "4.9" else "4.7"
         val originalPrice = selectedVariant?.price?.times(1.18)
         val priceLabel = selectedVariant?.price?.let(usdCurrencyFormat::format) ?: "Made to order"
         val heroImageUrl = selectedVariant?.imageUrl?.takeIf { it.isNotBlank() }
             ?: featuredProduct.imageUrl
         val relatedProducts = catalog.filter { it.internalId != featuredProduct.internalId }
+        val reviewPresentation = productReviewService.buildPresentation(featuredProduct, sort)
 
         model.addAttribute("catalogProducts", catalog)
         model.addAttribute("featuredProduct", featuredProduct)
         model.addAttribute("selectedVariant", selectedVariant)
         model.addAttribute("variantOptions", featuredProduct.variants.filter { it.imageUrl.isNotBlank() })
+        model.addAttribute("reviewVariantOptions", featuredProduct.variants)
         model.addAttribute("heroImageUrl", heroImageUrl)
         model.addAttribute("priceLabel", priceLabel)
         model.addAttribute("originalPriceLabel", originalPrice?.let(usdCurrencyFormat::format))
@@ -136,8 +199,8 @@ class ProductPageController(
             if (selectedVariant != null) "Ships in 24 hours" else "Ships in 2-3 business days"
         )
         model.addAttribute("featureChips", featureChips)
-        model.addAttribute("ratingLabel", rating)
-        model.addAttribute("reviewLabel", "$reviewCount reviews")
+        model.addAttribute("ratingLabel", reviewPresentation.ratingLabel)
+        model.addAttribute("reviewLabel", reviewPresentation.reviewLabel)
         model.addAttribute("variantCountLabel", "${featuredProduct.variants.size.coerceAtLeast(1)} option(s)")
         model.addAttribute("heroMediaLabel", if (selectedVariant != null) "Variant image" else "Product image")
         model.addAttribute(
@@ -173,21 +236,19 @@ class ProductPageController(
                 "This page is using live repository data, and all fragment swaps are resolved against the persisted catalog."
             }
         )
-        model.addAttribute(
-            "reviewSummary",
-            "Most buyers highlight ${featuredProduct.title.lowercase()} for its clean presentation and fast switching between options."
-        )
-        model.addAttribute(
-            "primaryReviewQuote",
-            "The ${featuredProduct.title} page feels polished, and the image updates instantly when I change variants."
-        )
-        model.addAttribute(
-            "secondaryReviewQuote",
-            selectedVariant?.let { "Choosing ${it.title} immediately refreshed the hero section without a full page reload." }
-                ?: "The base product view loads with sensible defaults and still feels complete."
-        )
         model.addAttribute("defaultVariantLabel", featuredProduct.variants.firstOrNull()?.title ?: "Base configuration")
         model.addAttribute("relatedProducts", relatedProducts.take(3))
+        model.addAttribute("activeSort", reviewPresentation.activeSort)
+        model.addAttribute("activeSortLabel", reviewPresentation.activeSortLabel)
+        model.addAttribute("commentCountLabel", reviewPresentation.commentCountLabel)
+        model.addAttribute("reviewSummary", reviewPresentation.reviewSummary)
+        model.addAttribute("fiveStarShare", reviewPresentation.fiveStarShare)
+        model.addAttribute("fourStarShare", reviewPresentation.fourStarShare)
+        model.addAttribute("threeStarAndBelowShare", reviewPresentation.threeStarAndBelowShare)
+        model.addAttribute("productComments", reviewPresentation.productComments)
+        model.addAttribute("commentForm", commentForm)
+        model.addAttribute("commentSubmissionNotice", commentSubmissionNotice)
+        model.addAttribute("commentNoticeIsError", commentNoticeIsError)
     }
 
     private fun buildFeatureChips(
@@ -257,5 +318,4 @@ class ProductPageController(
                 ),
             ),
         )
-
 }

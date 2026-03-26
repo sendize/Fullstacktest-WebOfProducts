@@ -40,3 +40,19 @@ Content-Type: application/json
 
 ### Delete a product
 DELETE {{baseUrl}}/api/products/{{knownExistingProductId}}
+
+### Get reviews for a product
+GET {{baseUrl}}/api/products/{{knownExistingProductId}}/reviews?sort=rating-desc
+Accept: application/json
+
+### Create a review for a product
+POST {{baseUrl}}/api/products/{{knownExistingProductId}}/reviews
+Content-Type: application/json
+
+{
+  "reviewerName": "Jordan",
+  "reviewerEmail": "jordan@example.com",
+  "commentText": "Worth the upgrade.",
+  "rating": 5,
+  "variantInternalId": "{{knownExistingVariantId}}"
+}
